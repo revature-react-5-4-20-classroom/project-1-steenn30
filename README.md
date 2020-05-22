@@ -5,7 +5,7 @@
 - An Employee can view the Employee Homepage
 - An Employee can logout
 - An Employee can submit a reimbursement request
-- An Employee can upload an image of his/her receipt as part of the reimbursement request
+- An Employee can upload an image of his/her receipt as part of the reimbursement request (optional)
 - An Employee can view their pending reimbursement requests
 - An Employee can view their resolved reimbursement requests
 - An Employee can view their information
@@ -17,16 +17,16 @@
 - A Manager can logout
 - A Manager can approve/deny pending reimbursement requests
 - A Manager can view all pending requests from all employees
-- A Manager can view images of the receipts from reimbursement requests
+- A Manager can view images of the receipts from reimbursement requests (optional)
 - A Manager can view all resolved requests from all employees and see which manager resolved it
 - A Manager can view all Employees
-- A Manager can view reimbursement requests from a single Employee 
+- A Manager can view reimbursement requests from a single Employee
 
 ## Technologies:
-- Java 1.8
-- Maven
-- JDBC
+- TypeScript
 - SQL
-- Servlet
-- HTML/JS/CSS
-- JUnit
+- React
+- Express (from pj0)
+- EC2 (pj0 deployed on EC2)
+- S3 (deploy frontend in S3 bucket -- no pipeline required)
+- Redux is optional
