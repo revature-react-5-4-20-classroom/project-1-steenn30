@@ -1,89 +1,120 @@
 import React from 'react'
 import {Reimbursement} from '../models/Reimbursement'
-import {getReimbursements} from '../api/ReimbursementClient'
+import {getReimbursements, getReimbursementsWithName} from '../api/ReimbursementClient'
 import { IState } from '../redux/reducers';
 import { User } from '../models/User';
 import {loginClickActionMapper} from '../redux/action-mapper'
 
-
 interface IReimbursementTableProps{
     status : string;
+    isResolver : boolean;
+    byUser: string;
+    updateTable: boolean;
 }
-
 interface IReimbursementState{
     reimbursements : Reimbursement[];
+    reimbursementRows:JSX.Element[];
 }
 
-export class ReimbursementRows extends React.Component<IReimbursementTableProps, IReimbursementState>{
+export class ReimbursementRows extends React.PureComponent<IReimbursementTableProps, IReimbursementState>{
     constructor(props: IReimbursementTableProps){
         super(props);
+        
+       
         this.state = {
-            reimbursements : []
+            reimbursements : [],
+            reimbursementRows: []
         }
-        
     }
-
-    //const reimbursements: Reimbursement[] = await getReimbursements(this.props.status);
-    
-    // async componentDidMount(){
-    //     const status = this.props.status
-    //     const reimbursements = await getReimbursements(status);
-        
-    //     this.setState({
-    //            reimbursements : reimbursements
-    //     })
-        
-    // }
-
     async componentDidMount() {
         //This runs after the component has added an element to the actual DOM for the first time
         // In other words, this runs once the component is done being created
-        
-        this.setState({
-            reimbursements: await getReimbursements(this.props.status)
-        });
-        
+        console.log('component mounted');
+        if(!this.props.isResolver){
+            if(this.props.byUser === "true"){
+                this.setState({
+                    reimbursements: await getReimbursements(this.props.status, this.props.byUser)
+                });
+            } else{
+               
+                this.setState({
+                    reimbursements: await getReimbursements(this.props.status, this.props.byUser)
+                });
+            }
+        } else {
+            this.setState({
+                reimbursements: await getReimbursementsWithName()
+            });    
+        }  
     }
-    // Lets us explicitly compare new state and new props to the ucrrent state and props
-    // Then decide if we need to update or not.abs
-    // We can use this to make our app more efficient and fix update-?setState->update Loops
+    
+    async componentDidUpdate() {
+        //This runs after the component has added an element to the actual DOM for the first time
+        // In other words, this runs once the component is done being created
+        console.log('component mounted');
+        if(this.props.updateTable === true){
+            if(!this.props.isResolver){
+                if(this.props.byUser === "true"){
+                    this.setState({
+                        reimbursements: await getReimbursements(this.props.status, this.props.byUser)
+                    });
+                } else{
+                   
+                    this.setState({
+                        reimbursements: await getReimbursements(this.props.status, this.props.byUser)
+                    });
+                }
+            } else {
+                this.setState({
+                    reimbursements: await getReimbursementsWithName()
+                });    
+            } 
+        }
+    }
 
-    // shouldComponentUpdate(nextProps : any, nextState : any){
+    
+   
+     render(){
         
-        
-    //     return this.state.reimbursements !== nextState.reimbursements;
-    // }
-
-    // async componentDidUpdate() {
-    //     this.setState({
-    //         reimbursements: await getReimbursements(this.props.status)
-    //     });
-    // }
-
-    render(){
         return( 
-            <>
-             {this.state.reimbursements.map((row : Reimbursement, i:any) => {
-                return <tr key={i}>
-                            <td>{row.reimbursementId}</td>
+            <tbody>
+             {this.state.reimbursements.map((row : Reimbursement, i) => {
+                return (<tr key={i}>
+                    {Object.values(row).map((value:any, index:number) => {
+                        return <td key={index}>{value}</td>
+                    })}
+                            {/* <td>{row.reimbursementId}</td>
                             <td>{row.author}</td>
                             <td>{row.amount}</td>
                             <td>{row.dateSubmitted}</td>
                             <td>{row.dateResolved}</td>
                             <td>{row.description}</td>
+                            <td>{row.resolver}</td>
                             <td>{row.status}</td>
-                            <td>{row.type}</td>
-                    </tr>;
+                            <td>{row.type}</td> */}
+                    </tr>)
             })}
-            </>
+            </tbody>
+            
         );
     }
+    
 }
-export class ReimbursementTableComponent extends React.Component<IReimbursementTableProps,any>{
+interface ITableState{
+    reload : boolean;
+}
+
+export class ReimbursementTableComponent extends React.PureComponent<IReimbursementTableProps,any>{
        
     constructor(props: IReimbursementTableProps){
         super(props);
+     
     }
+
+    // shouldComponentUpdate(nextProps : any, nextState : any){
+    //     return false;
+    
+    // }
     
     render(){
            return(
@@ -96,28 +127,38 @@ export class ReimbursementTableComponent extends React.Component<IReimbursementT
                         <th>Date Submitted</th>
                         <th>Date Resolved</th>
                         <th>Description</th>
+                        <th>Resolver</th>
                         <th>Status</th>
                         <th>Type</th>
                    </tr>
                    </thead>
-                   <tbody>
                    
-                   <ReimbursementRows status={this.props.status}/>
-                   </tbody>
+                   
+                   {/* <ReimbursementRows status={this.props.status} isResolver={this.props.isResolver} byUser={this.props.byUser} userid={this.props.userid}/> */}
+                   <ReimbursementRows {...this.props}/>
+                   
                </table>
            )
        }
 }
 
+interface IViewReimbursementComponentProps{
+    
+}
 
-
-export class ViewReimbursementComponent extends React.Component<any, any>{
-
+export class ViewReimbursementComponent extends React.PureComponent<IViewReimbursementComponentProps, any>{
+    constructor(props:IViewReimbursementComponentProps){
+        super(props)
+    }
+    async componentShouldUpdate(nextProps : any, nextState : any){
+        return false;
+    
+    }
     render(){
         return(
             <div>
                 <h1>Pending Reimbursements</h1>
-                        <ReimbursementTableComponent status='1'/>
+                        <ReimbursementTableComponent status='1' isResolver={false} byUser="true" updateTable={false}/>
                         <br>
                         </br>
                         <br></br>
@@ -135,7 +176,25 @@ export class ViewReimbursementComponent extends React.Component<any, any>{
                         <br></br>
 
                 <h1>Approved Reimbursements</h1>
-                    <ReimbursementTableComponent status='2'/>
+                    <ReimbursementTableComponent status='2' isResolver={false} byUser="true" updateTable={false} />
+
+                    <br>
+                        </br>
+                        <br></br>
+                        <br>
+                        </br>
+                        <br></br>
+                        <br>
+                        </br>
+                        <br></br>
+                        <br>
+                        </br>
+                        <br></br>
+                        <br>
+                        </br>
+                        <br></br>
+
+
             </div>
         )
     }    

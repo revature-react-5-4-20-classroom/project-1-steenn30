@@ -18,7 +18,6 @@ export interface IUserProps {
     email : string;
     roleId : number ;
     
-
 }
 
 export interface IUserState {

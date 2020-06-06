@@ -5,7 +5,7 @@ import { login } from '../api/ReimbursementClient';
 import {loginClickActionMapper} from '../redux/action-mapper'
 import { IState } from '../redux/reducers';
 import { connect, Provider } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import {Redirect } from 'react-router-dom';
 import  store  from '../App';
 import history from '../history'
 
@@ -14,7 +14,15 @@ import history from '../history'
 interface ILoginComponentProps {
   //updateUser: (user:User) => void;
   loginClickActionMapper:(user:User)=> void;
-  history : any
+  history : any;
+  userId : number;
+  username : string;
+  password : string;
+  firstName : string;
+  lastName : string;
+  email : string;
+  roleId : number;
+  updateUser : (user:User) => void;
 }
 
 interface ILoginComponentState {
@@ -27,6 +35,8 @@ interface ILoginComponentState {
   roleId: number;
   isError: boolean;
   errorMessage: string;
+  redirect:boolean;
+  
 }
 export interface IUserState {
   userId : number;
@@ -53,6 +63,7 @@ export class LoginComponent extends React.Component<ILoginComponentProps, ILogin
       roleId: 0,
       isError: false,
       errorMessage: '',
+      redirect: false
     }
   }
 
@@ -83,52 +94,65 @@ export class LoginComponent extends React.Component<ILoginComponentProps, ILogin
     console.log(event);
     
     try {
-      console.log(this.state.username);
-      const loggedInUser  = await login(this.state.username, this.state.password);
-      console.log(loggedInUser);
-      this.props.loginClickActionMapper(loggedInUser);
-      console.log(this);
-      this.props.history.push('/profile');
-      
+          console.log(this.state.username);
+          const loggedInUser  = await login(this.state.username, this.state.password);
+          console.log(loggedInUser);
+          this.props.loginClickActionMapper(loggedInUser);
+          console.log(this);
+          this.props.updateUser(loggedInUser);
+          this.setState({
+            redirect:true
+          })
     } catch (error) {
-      this.setState({
-        password: '',
-        isError: true,
-        errorMessage: error.message,
-      })
+        this.setState({
+          password: '',
+          isError: true,
+          errorMessage: error.message,
+        })
     }
   }
 
   render() {
-    return (
-      <div>
-      <Form onSubmit={this.attemptLogin} autoComplete='off'>
-        <FormGroup row>
-          <Label for="username" sm={2}>Username</Label>
-          <Col sm={6}>
-            {/* onChange lets Input change state, value lets Input display state */}
-            <Input onChange={this.setUsername} value={this.state.username} type="text" name="username" id="username" placeholder="your username" />
-          </Col>
-        </FormGroup>
-        <FormGroup row>
-          <Label for="password" sm={2}>Password</Label>
-          <Col sm={6}>
-            <Input onChange={this.setPassword} value={this.state.password} type="password" name="password" id="password" required />
-          </Col>
-        </FormGroup>
-        <Button color="info">Submit</Button>
-      </Form>
-      <Toast isOpen={this.state.isError}>
-        <ToastHeader icon="danger" toggle={this.clearError}>
-          Error!
-        </ToastHeader>
-        <ToastBody>
-          {this.state.errorMessage}
-        </ToastBody>
-
-      </Toast>
-      </div>
-    );
+    if(this.state.redirect){
+      this.setState({
+        redirect:false
+      })
+      return(
+        <Redirect to='/home'></Redirect>
+      )
+    }else{
+      return (
+        <div>
+        <Form onSubmit={this.attemptLogin} autoComplete='off'>
+          <FormGroup row>
+            <Label for="username" sm={2}>Username</Label>
+            <Col sm={6}>
+              {/* onChange lets Input change state, value lets Input display state */}
+              <Input onChange={this.setUsername} value={this.state.username} type="text" name="username" id="username" placeholder="your username" />
+            </Col>
+          </FormGroup>
+          <FormGroup row>
+            <Label for="password" sm={2}>Password</Label>
+            <Col sm={6}>
+              <Input onChange={this.setPassword} value={this.state.password} type="password" name="password" id="password" required />
+            </Col>
+          </FormGroup>
+          <Button color="info">Submit</Button>
+        </Form>
+        <Toast isOpen={this.state.isError}>
+          <ToastHeader icon="danger" toggle={this.clearError}>
+            Error!
+          </ToastHeader>
+          <ToastBody>
+            {this.state.errorMessage}
+          </ToastBody>
+  
+        </Toast>
+        </div>
+      );
+    }
+    
+    
   }
 
 }

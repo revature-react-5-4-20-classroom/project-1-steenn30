@@ -26,7 +26,7 @@ interface ILogoutComponentState {
     toLogin: boolean;
     
   }
-export class NavbarComponent extends React.Component<ILogoutComponentProps,ILogoutComponentState>{
+export class ManagerNavbarComponent extends React.Component<ILogoutComponentProps,ILogoutComponentState>{
     constructor(props: ILogoutComponentProps) {
         super(props);
         this.state = {
@@ -56,6 +56,7 @@ export class NavbarComponent extends React.Component<ILogoutComponentProps,ILogo
     render(){
 
         if(this.state.toLogin){
+            this.setState({toLogin:false})
             return(<Redirect to="/"></Redirect>)
             
         } else{
@@ -65,16 +66,25 @@ export class NavbarComponent extends React.Component<ILogoutComponentProps,ILogo
                     <Navbar color="light" light expand="md">
                         <Nav className="mr-auto" navbar>
                             <NavItem>
-                                <NavLink to="/home">Home</NavLink>
+                                <NavLink to="/manager/home">Home</NavLink>
+                            </NavItem>
+                            {/* <NavItem>
+                                <NavLink to="/manager/requests">Requests</NavLink>
+                            </NavItem> */}
+                            {/* <NavItem>
+                                <NavLink to="/manager/approve_or_deny">Resolve Reimbursements</NavLink>
+                            </NavItem> */}
+                            <NavItem>
+                                <NavLink to="/manager/pending_reimbursements">Pending Reimbursements</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink to="/profile">My Profile</NavLink>
+                                <NavLink to="/manager/resolved_reimbursements">Resolved Reimbursements</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink to="/submitreimbursement">New Reimbursement</NavLink>
+                                <NavLink to="/manager/view_employees">Employees</NavLink>
                             </NavItem>
                             <NavItem>
-                                <NavLink to="/viewreimbursements">View Reimbursements</NavLink>
+                                <NavLink to="/manager/reimbursements_by_employee">Reimbursements By Employee</NavLink>
                             </NavItem>
                             <NavItem>
                                 <Button onClick={(event)=>this.logout(event)} id="logout">Logout</Button>
@@ -102,4 +112,4 @@ const mapDispatchToProps = {
    
 
 
-export const ReduxNavBarComponent = connect(mapStateToProps, mapDispatchToProps)(NavbarComponent);
+export const ReduxManagerNavBarComponent = connect(mapStateToProps, mapDispatchToProps)(ManagerNavbarComponent);

@@ -12,7 +12,7 @@ import { Reimbursement } from '../models/Reimbursement';
 // without repeating ourselves
 
 const libraryClient = axios.create({
-    baseURL : 'http://18.216.197.108:3004',
+    baseURL : 'http://18.216.197.108:3005',
     //if you don't have the following line, your login won't work
     withCredentials: true,
 })
@@ -41,6 +41,31 @@ export async function logoutAxios(): Promise<AxiosResponse<any> | undefined>{
        
       
 }
+// export async function getAllReimbursements():Promise<Reimbursement[]>{
+
+//         const response = await libraryClient.get('/reimbursements');
+//         return response.data.map((reimbursementObj : Reimbursement)=> {
+//             const {reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type} = reimbursementObj;
+//             return new Reimbursement(reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type);
+//         })
+// }
+export async function getReimbursementsWithName():Promise<Reimbursement[]>{
+    const response =  await libraryClient.get('/reimbursements/resolver');
+    return response.data.map((reimbursementObj : Reimbursement)=> {
+        const {reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type} = reimbursementObj;
+        return new Reimbursement(reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type);
+    })
+}
+export async function updateReimbursement(status:string, id:string){
+    try{
+        const response = await libraryClient.patch('/reimbursements',{
+            reimbursementid : id,
+            status : status
+        })
+    } catch(e) {
+        console.log(e);
+    }
+}
 export async function updateUser(userId: any,username: string, firstName:string, lastName:string, email:string) {
     
     try{
@@ -58,7 +83,7 @@ export async function updateUser(userId: any,username: string, firstName:string,
     
 }
 export async function submitReimbursement(amount : string, type:string, descrip:string) {
-    console.log(amount)
+   
     try{
        await libraryClient.post('/reimbursements',{
             amount : amount,
@@ -80,13 +105,33 @@ export async function getAllUsers() : Promise<User[]>{
     })
 }
 
-export async function getReimbursements(status:string) : Promise<Reimbursement[]>{
-    const response =  await libraryClient.get('/reimbursements/status/'+status);
+
+export async function getReimbursementsById(userid:string) : Promise<Reimbursement[]>{
+    const response =  await libraryClient.get('/reimbursements/author/userId/'+userid);
+    return response.data.map((reimbursementObj : Reimbursement)=> {
+        const {reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type} = reimbursementObj;
+        return new Reimbursement(reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type);
+    })
+}
+export async function getReimbursements(status:string, byUser:string) : Promise<Reimbursement[]>{
+            
+            if(byUser==="true"){
+                    const response =  await libraryClient.get('/reimbursements/status/'+status+'/user/1');
+                    return response.data.map((reimbursementObj : Reimbursement)=> {
+                        const {reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type} = reimbursementObj;
+                        return new Reimbursement(reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type);
+    })
+    } else{
+        
+        const response =  await libraryClient.get('/reimbursements/status/'+status);
     
     return response.data.map((reimbursementObj : Reimbursement)=> {
         const {reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type} = reimbursementObj;
         return new Reimbursement(reimbursementId, author,amount, dateSubmitted,dateResolved, description , resolver, status, type);
     })
+    }
+    
+    
 }
 
 export async function getCurrentUser(id:any): Promise<User>{
@@ -97,7 +142,6 @@ export async function getCurrentUser(id:any): Promise<User>{
         return new User(userId, username, password, firstName, lastName, email, roleId);
     });
     const userInfoToSend = userInfo[0];
-    console.log(userInfoToSend.userId);
     return userInfoToSend;
 }
 

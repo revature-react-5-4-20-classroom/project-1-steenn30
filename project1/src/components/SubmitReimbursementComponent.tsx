@@ -42,6 +42,11 @@ export class SubmitReimbursementComponent extends React.Component<any,ISubmitRei
       { 
             event.preventDefault();
             await submitReimbursement(amount,type,descrip);
+            this.setState({
+              descrip: '',
+              type:'',
+              amount:''
+            })
       }
 
 

@@ -1,7 +1,7 @@
 import {AnyAction, combineReducers, bindActionCreators} from 'redux';
 import { loginTypes } from './action-mapper';
 import {User} from '../models/User'
-import { REHYDRATE } from 'redux-persist';
+
 
 
 

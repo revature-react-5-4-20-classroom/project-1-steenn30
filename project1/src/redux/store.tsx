@@ -3,9 +3,9 @@
 // There's going to be some boilerplate here
 import {compose, applyMiddleware, Store, createStore} from 'redux';
 import thunk from 'redux-thunk';
-import {state as rootReducer} from './reducers';
-import { persistStore, persistReducer } from 'redux-persist'
-
+import {state} from './reducers';
+import { persistStore, persistReducer, persistCombineReducers } from 'redux-persist'
+import hardSet from 'redux-persist/lib/stateReconciler/hardSet'
 import storage from 'redux-persist/lib/storage'
 import {loginReducer} from './reducers'
 // This line lets us use Redux dev tools, take from redux dev tools documentation
@@ -17,7 +17,7 @@ const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ||
 // action dispatching
 const persistConfig = {
     key: 'root',
-    stateReconciler: autoMergeLevel2,
+    stateReconciler: hardSet,
     storage,
     whitelist:['user']
   }
@@ -27,14 +27,14 @@ const enhancer = composeEnhancers(
 
 
 //actually build the store, our global state
-// export const store : Store<any> = createStore(
-//     state,
-//     enhancer
-// )
-const persistedReducer = persistReducer(persistConfig, loginReducer)
+export const store : Store<any> = createStore(
+    state,
+    enhancer
+)
+// const persistedReducer = persistReducer(persistConfig, loginReducer);
 
 
-export const store = createStore(persistedReducer, enhancer);
-export const persistor = persistStore(store)
+// export const store = createStore(persistedReducer, enhancer);
+// export const persistor = persistStore(store)
     
   

@@ -16,6 +16,7 @@
     "@types/reactstrap": "^8.4.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
+    "connected-react-router": "^6.8.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
