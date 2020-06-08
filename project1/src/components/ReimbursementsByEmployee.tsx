@@ -109,15 +109,20 @@ export class ReimbursementByEmployeeComponent extends React.Component<any, IWhol
     async updateReimbursements(){
         console.log(this.state.userid)
         this.setState({
-            reimbursements: await getReimbursementsById(this.state.userid)
+            reimbursements: await getReimbursementsById(this.state.userid),
         });
+    }
+    sleep = (milliseconds : any) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
     setUserid =(id: any) => {
         this.setState({
             userid: id.currentTarget.value,
           }) 
-        this.updateReimbursements()
-         
+        this.sleep(50).then(() => {
+            this.updateReimbursements();
+          })
+        
     }
     render(){
         return(
